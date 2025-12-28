@@ -10,7 +10,7 @@ export const ITEM_CATALOG = [
         floorOnly: true,
         strictFloor: true, 
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Bed 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Bed 1.fbx'
     },
     {
         id: 'double_bed',
@@ -22,7 +22,7 @@ export const ITEM_CATALOG = [
         floorOnly: true,
         strictFloor: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Bed 3.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Bed 3.fbx'
     },
     {
         id: 'bunk_bed',
@@ -34,7 +34,7 @@ export const ITEM_CATALOG = [
         floorOnly: true,
         strictFloor: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Bunk Bed.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Bunk Bed.fbx'
     },
     {
         id: 'floor_mat',
@@ -45,7 +45,7 @@ export const ITEM_CATALOG = [
         color: 0x95a5a6, 
         floorOnly: true,
         stackable: true,
-        modelPath: '/ultimate-interior-pack/Models/Rug 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Rug 1.fbx'
     },
 
     // --- SEATING ---
@@ -58,7 +58,7 @@ export const ITEM_CATALOG = [
         color: 0xf1c40f, 
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Chair 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Chair 1.fbx'
     },
     {
         id: 'office_chair',
@@ -69,7 +69,7 @@ export const ITEM_CATALOG = [
         color: 0x34495e,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Office Chair 3.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Office Chair 3.fbx'
     },
     {
         id: 'armchair',
@@ -80,7 +80,7 @@ export const ITEM_CATALOG = [
         color: 0xe67e22,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Armchair.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Armchair.fbx'
     },
     {
         id: 'sofa_small',
@@ -91,7 +91,7 @@ export const ITEM_CATALOG = [
         color: 0xc0392b,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Sofa 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Sofa 1.fbx'
     },
     {
         id: 'sofa_large',
@@ -102,7 +102,7 @@ export const ITEM_CATALOG = [
         color: 0x27ae60,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Sofa 5.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Sofa 5.fbx'
     },
 
     // --- TABLES & SURFACES ---
@@ -115,7 +115,7 @@ export const ITEM_CATALOG = [
         color: 0x8e44ad,
         floorOnly: true,
         stackable: true,
-        modelPath: '/ultimate-interior-pack/Models/Table 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Table 1.fbx'
     },
     {
         id: 'coffee_table',
@@ -126,7 +126,7 @@ export const ITEM_CATALOG = [
         color: 0xd35400,
         floorOnly: true,
         stackable: true,
-        modelPath: '/ultimate-interior-pack/Models/Coffee Table 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Coffee Table 1.fbx'
     },
     {
         id: 'desk_large',
@@ -137,7 +137,7 @@ export const ITEM_CATALOG = [
         color: 0x7f8c8d,
         floorOnly: true,
         stackable: true,
-        modelPath: '/ultimate-interior-pack/Models/Desk 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Desk 1.fbx'
     },
     {
         id: 'nightstand',
@@ -148,7 +148,7 @@ export const ITEM_CATALOG = [
         color: 0x95a5a6,
         floorOnly: true,
         stackable: true,
-        modelPath: '/ultimate-interior-pack/Models/Nightstand 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Nightstand 1.fbx'
     },
 
     // --- KITCHEN & APPLIANCES ---
@@ -161,7 +161,7 @@ export const ITEM_CATALOG = [
         color: 0xecf0f1,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Refrigerator 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Refrigerator 1.fbx'
     },
     {
         id: 'microwave',
@@ -172,7 +172,7 @@ export const ITEM_CATALOG = [
         color: 0xbdc3c7,
         floorOnly: false,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Microwave.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Microwave.fbx'
     },
     {
         id: 'stove',
@@ -183,7 +183,7 @@ export const ITEM_CATALOG = [
         color: 0x34495e,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Stove.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Stove.fbx'
     },
     {
         id: 'sink_kitchen',
@@ -194,7 +194,7 @@ export const ITEM_CATALOG = [
         color: 0x7f8c8d,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Sink Desk.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Sink Desk.fbx'
     },
 
     // --- BATHROOM ---
@@ -207,7 +207,7 @@ export const ITEM_CATALOG = [
         color: 0xffffff, 
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Toilet 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Toilet 1.fbx'
     },
     {
         id: 'shower',
@@ -219,7 +219,7 @@ export const ITEM_CATALOG = [
         floorOnly: false, 
         wallMounted: true, 
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Shower Head 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Shower Head 1.fbx'
     },
     {
         id: 'bathtub',
@@ -230,7 +230,7 @@ export const ITEM_CATALOG = [
         color: 0xecf0f1,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Bathtub 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Bathtub 1.fbx'
     },
 
     // --- STORAGE ---
@@ -243,7 +243,7 @@ export const ITEM_CATALOG = [
         color: 0x8e44ad,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Wardrobe 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Wardrobe 1.fbx'
     },
     {
         id: 'bookcase',
@@ -254,7 +254,7 @@ export const ITEM_CATALOG = [
         color: 0xd35400,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Bookcase.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Bookcase.fbx'
     },
     {
         id: 'crate',
@@ -265,7 +265,7 @@ export const ITEM_CATALOG = [
         color: 0xd35400,
         floorOnly: false,
         stackable: true,
-        modelPath: '/ultimate-interior-pack/Models/Wooden Container 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Wooden Container 1.fbx'
     },
 
     // --- ENTERTAINMENT & MISC ---
@@ -279,7 +279,7 @@ export const ITEM_CATALOG = [
         floorOnly: false,
         wallMounted: true, 
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Television 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Television 1.fbx'
     },
     {
         id: 'laptop',
@@ -290,7 +290,7 @@ export const ITEM_CATALOG = [
         color: 0x34495e,
         floorOnly: false,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Laptop.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Laptop.fbx'
     },
     {
         id: 'plant',
@@ -301,7 +301,7 @@ export const ITEM_CATALOG = [
         color: 0x2ecc71,
         floorOnly: false,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Potted Plant 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Potted Plant 1.fbx'
     },
     {
         id: 'cactus',
@@ -312,7 +312,7 @@ export const ITEM_CATALOG = [
         color: 0x27ae60,
         floorOnly: false,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Cactus Planter.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Cactus Planter.fbx'
     },
     {
         id: 'clock_wall',
@@ -324,7 +324,7 @@ export const ITEM_CATALOG = [
         floorOnly: false,
         wallMounted: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Wall Clock 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Wall Clock 1.fbx'
     },
     {
         id: 'mirror',
@@ -336,7 +336,7 @@ export const ITEM_CATALOG = [
         floorOnly: false,
         wallMounted: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Mirror 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Mirror 1.fbx'
     },
     {
         id: 'trash_can',
@@ -347,7 +347,7 @@ export const ITEM_CATALOG = [
         color: 0x7f8c8d,
         floorOnly: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Trash Can 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Trash Can 1.fbx'
     },
     {
         id: 'door',
@@ -359,7 +359,7 @@ export const ITEM_CATALOG = [
         floorOnly: true,
         strictFloor: true,
         stackable: false,
-        modelPath: '/ultimate-interior-pack/Models/Door 1.fbx'
+        modelPath: 'ultimate-interior-pack/Models/Door 1.fbx'
     }
 ];
 
