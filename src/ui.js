@@ -21,8 +21,7 @@ export class UIManager {
             controlPanel: document.getElementById('control-panel'),
             menuToggleBtn: document.getElementById('menu-toggle-btn'),
             controlsHint: document.getElementById('controls-hint'),
-            requirementsHeader: document.querySelector('#requirements-panel h3'),
-            inventoryHeader: document.querySelector('#inventory-panel h3')
+            requirementsHeader: document.querySelector('#requirements-panel h3')
         };
 
         this.initInventory();
@@ -85,12 +84,17 @@ export class UIManager {
             this.callbacks.onBackToTitle();
             this.elements.controlPanel.classList.add('hidden');
         });
+
+        // Horizontal scroll for inventory with mouse wheel
+        this.elements.itemList.addEventListener('wheel', (evt) => {
+            evt.preventDefault();
+            this.elements.itemList.scrollLeft += evt.deltaY;
+        });
     }
 
     updateText() {
         // Static text updates
         this.elements.requirementsHeader.textContent = t('reqHeader');
-        this.elements.inventoryHeader.textContent = t('inventory');
         this.elements.completeBtn.textContent = t('completeBtn');
         this.elements.controlsHint.textContent = t('controls');
         this.elements.langBtn.textContent = t('lang');
