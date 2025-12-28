@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { GameState } from './game.js';
 import { UIManager } from './ui.js';
 
@@ -19,11 +20,15 @@ const direction = new THREE.Vector3();
 const gameState = new GameState();
 let uiManager;
 let selectedItemData = null; 
-let ghostMesh = null;
+let ghostMesh = null; // This will now be a Group containing the visual mesh
 let placementValid = false;
 let roomMeshes = []; 
 let floorMesh = null; 
 let itemMeshes = []; 
+
+// Asset Management
+const fbxLoader = new FBXLoader();
+const modelCache = new Map(); // path -> THREE.Group (normalized)
 
 init();
 animate();
@@ -76,7 +81,6 @@ function init() {
                 uiManager.showWin();
                 controls.unlock();
             } else if (result) {
-                // Lock items
                 uiManager.update();
             }
         },
@@ -135,27 +139,21 @@ function createRoom() {
     // Walls
     const wallMat = new THREE.MeshLambertMaterial({ color: 0xdddddd, side: THREE.DoubleSide });
     
-    // Position walls so they are exactly at the boundary.
-    // BoxGeometry center is 0,0,0. 
-    // Back Wall (Z-)
     const backWall = new THREE.Mesh(new THREE.BoxGeometry(ROOM_SIZE.x, ROOM_SIZE.y, 0.1), wallMat);
-    backWall.position.set(0, ROOM_SIZE.y / 2, -ROOM_SIZE.z / 2 - 0.05); // Move out by half thickness
+    backWall.position.set(0, ROOM_SIZE.y / 2, -ROOM_SIZE.z / 2 - 0.05); 
     scene.add(backWall);
     roomMeshes.push(backWall);
 
-    // Front Wall (Z+)
     const frontWall = new THREE.Mesh(new THREE.BoxGeometry(ROOM_SIZE.x, ROOM_SIZE.y, 0.1), wallMat);
     frontWall.position.set(0, ROOM_SIZE.y / 2, ROOM_SIZE.z / 2 + 0.05);
     scene.add(frontWall);
     roomMeshes.push(frontWall);
 
-    // Left Wall (X-)
     const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.1, ROOM_SIZE.y, ROOM_SIZE.z), wallMat);
     leftWall.position.set(-ROOM_SIZE.x / 2 - 0.05, ROOM_SIZE.y / 2, 0);
     scene.add(leftWall);
     roomMeshes.push(leftWall);
 
-    // Right Wall (X+)
     const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.1, ROOM_SIZE.y, ROOM_SIZE.z), wallMat);
     rightWall.position.set(ROOM_SIZE.x / 2 + 0.05, ROOM_SIZE.y / 2, 0);
     scene.add(rightWall);
@@ -165,10 +163,81 @@ function createRoom() {
 function resetGameScene() {
     itemMeshes.forEach(mesh => scene.remove(mesh));
     itemMeshes = [];
-    
     camera.position.set(0, 1.6, 0);
     camera.rotation.set(0, 0, 0); 
 }
+
+// --- Asset Loading & Normalization ---
+function loadAndPrepareModel(itemData, callback) {
+    if (modelCache.has(itemData.id)) {
+        callback(modelCache.get(itemData.id).clone());
+        return;
+    }
+
+    // If no model path, use placeholder box
+    if (!itemData.modelPath) {
+        const geo = new THREE.BoxGeometry(itemData.dimensions.x, itemData.dimensions.y, itemData.dimensions.z);
+        const mat = new THREE.MeshLambertMaterial({ color: itemData.color });
+        const mesh = new THREE.Mesh(geo, mat);
+        modelCache.set(itemData.id, mesh);
+        callback(mesh.clone());
+        return;
+    }
+
+    fbxLoader.load(itemData.modelPath, (fbx) => {
+        // Normalize Scale and Position
+        // 1. Compute Box
+        const box = new THREE.Box3().setFromObject(fbx);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+
+        // 2. Create Wrapper Group (The Actor)
+        const wrapper = new THREE.Group();
+        wrapper.add(fbx);
+
+        // 3. Center the mesh inside the wrapper
+        // We want the wrapper's (0,0,0) to be the CENTER of the object
+        fbx.position.x = -center.x;
+        fbx.position.y = -center.y;
+        fbx.position.z = -center.z;
+
+        // 4. Scale to match Target Dimensions
+        const targetX = itemData.dimensions.x;
+        const targetY = itemData.dimensions.y;
+        const targetZ = itemData.dimensions.z;
+
+        // Avoid divide by zero
+        const scaleX = size.x > 0 ? targetX / size.x : 1;
+        const scaleY = size.y > 0 ? targetY / size.y : 1;
+        const scaleZ = size.z > 0 ? targetZ / size.z : 1;
+
+        wrapper.scale.set(scaleX, scaleY, scaleZ);
+
+        // 5. Apply Material Color (since textures are missing)
+        fbx.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                // Apply catalog color
+                child.material = new THREE.MeshLambertMaterial({ color: itemData.color });
+            }
+        });
+
+        modelCache.set(itemData.id, wrapper);
+        callback(wrapper.clone());
+    }, undefined, (error) => {
+        console.error("Error loading model:", error);
+        // Fallback to box
+        const geo = new THREE.BoxGeometry(itemData.dimensions.x, itemData.dimensions.y, itemData.dimensions.z);
+        const mat = new THREE.MeshLambertMaterial({ color: itemData.color });
+        const mesh = new THREE.Mesh(geo, mat);
+        modelCache.set(itemData.id, mesh);
+        callback(mesh.clone());
+    });
+}
+
 
 function updateGhostMesh() {
     if (ghostMesh) {
@@ -177,15 +246,28 @@ function updateGhostMesh() {
     }
     if (!selectedItemData) return;
 
-    const dim = selectedItemData.dimensions;
-    const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
-    const mat = new THREE.MeshBasicMaterial({ color: selectedItemData.color, opacity: 0.5, transparent: true });
-    ghostMesh = new THREE.Mesh(geo, mat);
-    scene.add(ghostMesh);
+    loadAndPrepareModel(selectedItemData, (model) => {
+        // If selection changed while loading, discard
+        if (selectedItemData.id !== selectedItemData.id) return; 
+
+        ghostMesh = model;
+        
+        // Make Transparent
+        ghostMesh.traverse((child) => {
+            if (child.isMesh) {
+                child.material = child.material.clone();
+                child.material.transparent = true;
+                child.material.opacity = 0.5;
+            }
+        });
+
+        // Hide initially until raycast updates position
+        ghostMesh.position.set(0, -100, 0); 
+        scene.add(ghostMesh);
+    });
 }
 
 function onMouseWheel(event) {
-    // Disable manual rotation for wall-mounted items to keep them aligned
     if (controls.isLocked && ghostMesh && selectedItemData && !selectedItemData.wallMounted) {
         ghostMesh.rotation.y += event.deltaY * 0.002;
     }
@@ -229,13 +311,29 @@ function onMouseDown(event) {
             placeItem();
         }
     } else if (event.button === 2) { // Right Click
-        const intersects = raycaster.intersectObjects(itemMeshes);
-        if (intersects.length > 0) {
-            const hitObject = intersects[0].object;
-            const removed = gameState.removeItem(hitObject.uuid);
+        // Raycast intersects gives mesh. parent might be the Group.
+        // We need to find the root object in itemMeshes
+        const intersects = raycaster.intersectObjects(scene.children, true); // true = recursive
+        
+        let hitRoot = null;
+        for (const hit of intersects) {
+            // Check if hit object or any parent is in itemMeshes
+            let obj = hit.object;
+            while(obj) {
+                if (itemMeshes.includes(obj)) {
+                    hitRoot = obj;
+                    break;
+                }
+                obj = obj.parent;
+            }
+            if (hitRoot) break;
+        }
+
+        if (hitRoot) {
+            const removed = gameState.removeItem(hitRoot.uuid);
             if (removed) {
-                scene.remove(hitObject);
-                itemMeshes = itemMeshes.filter(m => m !== hitObject);
+                scene.remove(hitRoot);
+                itemMeshes = itemMeshes.filter(m => m !== hitRoot);
                 uiManager.update();
             }
         }
@@ -243,27 +341,28 @@ function onMouseDown(event) {
 }
 
 function placeItem() {
-    const dim = selectedItemData.dimensions;
-    const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
-    const mat = new THREE.MeshLambertMaterial({ color: selectedItemData.color });
-    const mesh = new THREE.Mesh(geo, mat);
-    
-    mesh.position.copy(ghostMesh.position);
-    mesh.rotation.copy(ghostMesh.rotation);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
+    if (!ghostMesh) return;
 
-    scene.add(mesh);
-    itemMeshes.push(mesh);
-    gameState.addItem(selectedItemData, mesh.uuid);
-    
-    uiManager.update();
+    loadAndPrepareModel(selectedItemData, (model) => {
+        model.position.copy(ghostMesh.position);
+        model.rotation.copy(ghostMesh.rotation);
+        
+        scene.add(model);
+        itemMeshes.push(model);
+        // Map mesh UUID to item UUID for logic
+        gameState.addItem(selectedItemData, model.uuid);
+        uiManager.update();
+    });
 }
 
 function checkPlacementValidity(position, hitObject) {
     if (!selectedItemData || !ghostMesh) return false;
     
-    const isWall = roomMeshes.includes(hitObject) && hitObject !== floorMesh;
+    // Check if we hit a wall for wall-mounted items
+    let isWall = false;
+    if (hitObject) {
+         isWall = roomMeshes.includes(hitObject) && hitObject !== floorMesh;
+    }
 
     // 1. Strict Floor Check
     if (selectedItemData.strictFloor) {
@@ -278,7 +377,6 @@ function checkPlacementValidity(position, hitObject) {
     }
 
     // 3. Room Bounds Check
-    // For wall mounted items, we need a bit more leniency at the back face (where it touches wall)
     ghostMesh.position.copy(position); 
     ghostMesh.updateMatrixWorld(true);
 
@@ -291,7 +389,7 @@ function checkPlacementValidity(position, hitObject) {
     const roomMinZ = -ROOM_SIZE.z / 2;
     const roomMaxZ = ROOM_SIZE.z / 2;
     
-    const epsilon = 0.05; // Slightly larger epsilon
+    const epsilon = 0.05; 
 
     if (min.x < roomMinX - epsilon || max.x > roomMaxX + epsilon || 
         min.z < roomMinZ - epsilon || max.z > roomMaxZ + epsilon) {
@@ -301,10 +399,10 @@ function checkPlacementValidity(position, hitObject) {
     // 4. Collision with other items
     const collisionBox = ghostBox.clone().expandByScalar(-0.05);
 
-    for (const itemMesh of itemMeshes) {
-        if (itemMesh === hitObject) continue; 
-
-        const itemBox = new THREE.Box3().setFromObject(itemMesh);
+    for (const itemRoot of itemMeshes) {
+        if (itemRoot === hitObject) continue; 
+        
+        const itemBox = new THREE.Box3().setFromObject(itemRoot);
         if (collisionBox.intersectsBox(itemBox)) {
             return false;
         }
@@ -341,10 +439,18 @@ function animate() {
         // ------------------------------
 
         // Raycast
-        const intersectObjects = [...roomMeshes, ...itemMeshes];
+        // itemMeshes are Groups now. intersectObjects needs recursive check or check children.
+        // We'll traverse itemMeshes to get all children meshes for raycasting.
+        let interactables = [...roomMeshes];
+        itemMeshes.forEach(group => {
+            group.traverse(child => {
+                if (child.isMesh) interactables.push(child);
+            });
+        });
+
         raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
         
-        const intersects = raycaster.intersectObjects(intersectObjects);
+        const intersects = raycaster.intersectObjects(interactables);
         
         if (intersects.length > 0 && selectedItemData && ghostMesh) {
             const hit = intersects[0];
@@ -352,60 +458,65 @@ function animate() {
 
             let validSurface = true;
             
-            // Check surface validity
             const isFloor = hitObject === floorMesh;
             const isWall = roomMeshes.includes(hitObject) && !isFloor;
-            const isItem = itemMeshes.includes(hitObject);
+            
+            // Determine if we hit an item
+            let hitItemRoot = null;
+            let obj = hitObject;
+            while(obj) {
+                if (itemMeshes.includes(obj)) {
+                    hitItemRoot = obj;
+                    break;
+                }
+                obj = obj.parent;
+            }
+            const isItem = !!hitItemRoot;
 
             if (selectedItemData.floorOnly && !isFloor && !isItem) validSurface = false;
             if (selectedItemData.wallMounted && !isWall) validSurface = false;
             
-            // Stacking logic
-            if (isItem) {
-                 const itemData = gameState.placedItems.find(p => p.meshUuid === hitObject.uuid)?.data;
+            if (isItem && hitItemRoot) {
+                 const itemData = gameState.placedItems.find(p => p.meshUuid === hitItemRoot.uuid)?.data;
                  if (itemData && !itemData.stackable) {
                      validSurface = false;
                  }
-                 if (selectedItemData.wallMounted) validSurface = false; // Cant put wall item on another item (yet)
+                 if (selectedItemData.wallMounted) validSurface = false; 
             }
 
             if (selectedItemData.wallMounted && isWall) {
-                // Wall Placement Logic
                 const normal = hit.face.normal;
                 const point = hit.point;
-                const depth = selectedItemData.dimensions.z; // Assumes Z is depth
+                const depth = selectedItemData.dimensions.z; 
 
-                // Position: Point + Normal * (half depth)
                 const targetPos = point.clone().add(normal.clone().multiplyScalar(depth / 2));
                 
                 ghostMesh.position.copy(targetPos);
                 
-                // Rotation: Look at normal direction
-                // lookAt aligns +Z to target. We want Back (-Z) to be towards wall (opposite normal).
-                // So +Z is same direction as normal.
-                // We look at (Position + Normal)
                 const lookTarget = ghostMesh.position.clone().add(normal);
                 ghostMesh.lookAt(lookTarget);
 
             } else {
-                // Floor/Surface Placement Logic
                 const point = hit.point;
                 let targetY = point.y + selectedItemData.dimensions.y / 2;
                 ghostMesh.position.set(point.x, targetY, point.z);
                 
-                // Reset rotation pitch/roll if needed, keep Y yaw (handled by user or default)
                 ghostMesh.rotation.x = 0;
                 ghostMesh.rotation.z = 0;
-                // keep ghostMesh.rotation.y from user input
             }
 
             if (!validSurface) {
                 placementValid = false;
             } else {
-                placementValid = checkPlacementValidity(ghostMesh.position, hitObject);
+                placementValid = checkPlacementValidity(ghostMesh.position, hitItemRoot || hitObject);
             }
             
-            ghostMesh.material.color.setHex(placementValid ? 0x00ff00 : 0xff0000);
+            // Update ghost color
+            const color = placementValid ? 0x00ff00 : 0xff0000;
+            ghostMesh.traverse(child => {
+                if (child.isMesh) child.material.color.setHex(color);
+            });
+
         } else if (ghostMesh) {
             ghostMesh.position.set(0, -100, 0);
         }

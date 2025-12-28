@@ -17,19 +17,19 @@ export class GameState {
             },
             {
                 id: 4,
-                requirements: { 'toilet': 2, 'sleep': 3, 'shower': 1 }
+                requirements: { 'toilet': 1, 'sleep': 3, 'shower': 1, 'kitchen': 1 }
             },
             {
                 id: 5,
-                requirements: { 'toilet': 2, 'sleep': 3, 'shower': 1, 'seat': 1, 'surface': 1 }
+                requirements: { 'toilet': 1, 'sleep': 3, 'shower': 1, 'kitchen': 2, 'seat': 1, 'surface': 1 }
             },
             {
                 id: 6,
-                requirements: { 'toilet': 2, 'sleep': 4, 'shower': 1, 'seat': 2, 'surface': 1, 'entertainment': 1 }
+                requirements: { 'toilet': 2, 'sleep': 4, 'shower': 1, 'kitchen': 3, 'seat': 2, 'surface': 2, 'entertainment': 1 }
             },
             {
                 id: 7,
-                requirements: { 'toilet': 2, 'sleep': 6, 'shower': 1, 'storage': 5, 'access': 1 }
+                requirements: { 'toilet': 2, 'sleep': 6, 'shower': 2, 'kitchen': 4, 'storage': 10, 'access': 1, 'decor': 2 }
             }
         ];
     }
