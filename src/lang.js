@@ -1,6 +1,6 @@
 export const TRANSLATIONS = {
     en: {
-        title: "Micro-Renovator",
+        title: "Technically Livable: Extreme Snail Reno",
         subtitle: "Fit the requirements. Save the money.",
         start: "Click to Start",
         budget: "Budget",
@@ -45,7 +45,7 @@ export const TRANSLATIONS = {
         }
     },
     zh: {
-        title: "微型改造王",
+        title: "極限蝸居：這也能住",
         subtitle: "滿足需求，越省越好。",
         start: "點擊開始",
         budget: "預算",
