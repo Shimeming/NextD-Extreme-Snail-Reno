@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low-Cost Renovation Puzzle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container"></div>
+
+    <div id="ui-layer">
+        <div id="crosshair">+</div>
+        
+        <div id="stats-panel">
+            <div id="budget-display">Budget: $0</div>
+            <div id="phase-display">Phase: 1</div>
+        </div>
+
+        <div id="settings-panel">
+            <button id="lang-btn">中文</button>
+            <div id="control-panel" class="hidden">
+                <button id="restart-btn">Restart</button>
+                <button id="title-btn">Title</button>
+            </div>
+            <button id="menu-toggle-btn">⚙️</button>
+        </div>
+
+        <div id="requirements-panel">
+            <h3>Requirements</h3>
+            <ul id="req-list">
+                <!-- Populated by JS -->
+            </ul>
+            <button id="complete-phase-btn">Complete Phase</button>
+            <div id="phase-feedback"></div>
+        </div>
+
+        <div id="controls-hint">
+            <p>[WASD] Move | [Mouse] Look</p>
+            <p>[E] Toggle Inventory/Cursor | [R] Rotate Item</p>
+            <p>[Click] Place Item | [Right Click] Remove (Unlocked items)</p>
+        </div>
+
+        <div id="inventory-panel" class="hidden">
+            <h3>Inventory</h3>
+            <div id="item-list">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+        
+        <div id="start-screen">
+            <h1>Micro-Renovator</h1>
+            <p>Fit the requirements. Save the money.</p>
+            <p>Click to Start</p>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
